@@ -15,6 +15,25 @@ interface Project {
   category: Category
 }
 
+const CategoryInfo: Record<Category, { title: string; description: string }> = {
+  "AI & Data": {
+    title: "AI & Data",
+    description: "Machine learning models, data analysis pipelines, and intelligent systems."
+  },
+  "Mobile": {
+    title: "Mobile Development",
+    description: "Native and cross-platform mobile applications built for performance and user experience."
+  },
+  "Web": {
+    title: "Web Development",
+    description: "Responsive, dynamic, and scalable web applications using modern frameworks."
+  },
+  "Desktop": {
+    title: "Desktop Applications",
+    description: "Robust software solutions optimized for desktop environments."
+  }
+}
+
 // Tech Stack Icons
 const TechIcons: Record<string, React.ReactNode> = {
   "React": (
@@ -86,37 +105,127 @@ function getTechIcon(name: string) {
 
 function TechBadge({ name }: { name: string }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100/80 backdrop-blur-sm rounded-full border border-gray-200 hover:border-black/20 transition-colors">
-      <div className="w-4 h-4 text-gray-700">
+    <div className="flex items-center gap-2 px-2 py-1 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full border border-gray-200 dark:border-gray-700">
+      <div className="w-3 h-3 text-gray-700 dark:text-gray-300">
         {getTechIcon(name)}
       </div>
-      <span className="text-sm font-medium text-gray-700">{name}</span>
+      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{name}</span>
     </div>
   )
 }
 
-function MainTechStack({ technologies }: { technologies: string[] }) {
+function MainTechStack({ technologies, selected, onToggle }: { technologies: string[], selected: string[], onToggle: (tech: string) => void }) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 my-8">
-      {technologies.map((tech) => (
-        <div key={tech} className="group relative">
-          <div className="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-            <div className="w-6 h-6 text-gray-700 group-hover:scale-110 transition-transform duration-300">
-              {getTechIcon(tech)}
+      {technologies.map((tech) => {
+        const isSelected = selected.includes(tech);
+        return (
+          <button
+            key={tech}
+            onClick={() => onToggle(tech)}
+            className="group relative focus:outline-none"
+          >
+            <div className={cn(
+              "w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-900 rounded-2xl shadow-sm border transition-all duration-300",
+              isSelected
+                ? "border-black dark:border-white ring-2 ring-black/10 dark:ring-white/10 scale-110"
+                : "border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
+            )}>
+              <div className={cn(
+                "w-6 h-6 transition-transform duration-300",
+                isSelected ? "text-black dark:text-white" : "text-gray-700 dark:text-gray-300 group-hover:scale-110"
+              )}>
+                {getTechIcon(tech)}
+              </div>
             </div>
-          </div>
-          <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-gray-600 bg-white px-2 py-1 rounded shadow-sm border whitespace-nowrap z-10 pointer-events-none">
-            {tech}
-          </span>
-        </div>
-      ))}
+            <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 px-2 py-1 rounded shadow-sm border dark:border-gray-700 whitespace-nowrap z-10 pointer-events-none">
+              {tech}
+            </span>
+          </button>
+        )
+      })}
     </div>
   )
 }
+
+function ProjectCard({ project, onClick }: { project: Project, onClick: () => void }) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.3 }}
+      className="w-[300px] md:w-[350px] flex-shrink-0 bg-white dark:bg-gray-900 border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition-all duration-300 group rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:shadow-lg cursor-pointer"
+      onClick={onClick}
+    >
+      {/* Title */}
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        {project.title}
+      </h3>
+
+      {/* Thumbnail */}
+      <div className={`h-40 w-full rounded-xl bg-gradient-to-br ${project.gradient} relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500 shadow-inner`}>
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300"></div>
+      </div>
+
+      {/* Description */}
+      <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
+        {project.description}
+      </p>
+
+      {/* Tech Badges */}
+      <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+        {project.technologies.slice(0, 3).map((tech) => (
+          <TechBadge key={tech} name={tech} />
+        ))}
+        {project.technologies.length > 3 && (
+          <div className="px-2 py-1 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs rounded-full font-medium border border-gray-100 dark:border-gray-700">
+            +{project.technologies.length - 3}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+function CategorySection({
+  category,
+  projects,
+  onProjectClick
+}: {
+  category: Category,
+  projects: Project[],
+  onProjectClick: (p: Project) => void
+}) {
+  if (projects.length === 0) return null;
+
+  return (
+    <div className="mb-16 last:mb-0">
+      <div className="mb-6">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {CategoryInfo[category].title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
+          {CategoryInfo[category].description}
+        </p>
+      </div>
+
+      <div className="flex overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide snap-x gap-6">
+        {projects.map(project => (
+          <div key={project.title} className="snap-start">
+            <ProjectCard project={project} onClick={() => onProjectClick(project)} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All')
+  const [selectedTechStacks, setSelectedTechStacks] = useState<string[]>([])
 
   const projects: Project[] = [
     {
@@ -163,112 +272,58 @@ export default function Projects() {
   ]
 
   const uniqueTechnologies = Array.from(new Set(projects.flatMap(p => p.technologies)))
-  const filteredProjects = activeCategory === 'All'
-    ? projects
-    : projects.filter(p => p.category === activeCategory)
 
-  const categories: (Category | 'All')[] = ['All', 'AI & Data', 'Mobile', 'Web', 'Desktop']
+  const toggleTech = (tech: string) => {
+    setSelectedTechStacks(prev =>
+      prev.includes(tech) ? prev.filter(t => t !== tech) : [...prev, tech]
+    )
+  }
+
+  const filterProjects = (projects: Project[]) => {
+    if (selectedTechStacks.length === 0) return projects;
+    return projects.filter(project =>
+      selectedTechStacks.every(tech => project.technologies.includes(tech))
+    );
+  }
+
+  const filteredProjects = filterProjects(projects);
+  const categories: Category[] = ["AI & Data", "Mobile", "Web", "Desktop"];
 
   return (
     <>
-      <section id="projects" className="py-24 px-4 bg-white min-h-screen">
+      <section id="projects" className="py-24 px-4 bg-white dark:bg-black min-h-screen transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h2 className="text-5xl font-serif font-bold text-black mb-6">Personal Projects</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-serif font-bold text-black dark:text-white mb-6">Personal Projects</h2>
             <div className="w-16 h-px bg-gray-400 mx-auto mb-8"></div>
 
             {/* Tech Stack Banner */}
-            <MainTechStack technologies={uniqueTechnologies} />
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">Filter by technology</p>
+            <MainTechStack
+              technologies={uniqueTechnologies}
+              selected={selectedTechStacks}
+              onToggle={toggleTech}
+            />
           </div>
 
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
-            {categories.map((category) => (
-              <button
+          {/* Categories */}
+          <div className="space-y-4">
+            {categories.map(category => (
+              <CategorySection
                 key={category}
-                onClick={() => setActiveCategory(category)}
-                className={cn(
-                  "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-                  activeCategory === category
-                    ? "bg-black text-white shadow-lg scale-105"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-black"
-                )}
-              >
-                {category}
-              </button>
+                category={category}
+                projects={filteredProjects.filter(p => p.category === category)}
+                onProjectClick={setSelectedProject}
+              />
             ))}
+
+            {filteredProjects.length === 0 && (
+              <div className="text-center py-20 text-gray-500 dark:text-gray-400">
+                No projects match the selected filters.
+              </div>
+            )}
           </div>
-
-          {/* Projects Grid/Scroll */}
-          <motion.div
-            layout
-            className="flex flex-wrap justify-center gap-8"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project, index) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  key={project.title}
-                  className="w-full md:w-[450px] lg:w-[500px] bg-white border border-gray-200 hover:border-black transition-all duration-300 group rounded-3xl overflow-hidden shadow-sm hover:shadow-md"
-                >
-                  {/* Thumbnail */}
-                  <div className={`h-64 bg-gradient-to-br ${project.gradient} relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500`}>
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300"></div>
-                    {/* Category Tag */}
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-black text-xs font-bold uppercase tracking-wider rounded-full shadow-sm">
-                        {project.category}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="p-8">
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-2xl font-bold text-black group-hover:translate-x-1 transition-transform">
-                        {project.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-gray-600 text-base mb-6 leading-relaxed line-clamp-3 min-h-[4.5rem]">
-                      {project.description}
-                    </p>
-
-                    {/* Tech Badges */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <TechBadge key={tech} name={tech} />
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <div className="px-3 py-1.5 bg-gray-50 text-gray-500 text-sm rounded-full font-medium border border-gray-100">
-                          +{project.technologies.length - 3}
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => setSelectedProject(project)}
-                      className="w-full py-4 flex items-center justify-center bg-gray-50 hover:bg-black text-gray-900 hover:text-white font-medium rounded-2xl transition-all duration-300 group/btn"
-                    >
-                      View Details
-                      <span className="ml-2 group-hover/btn:translate-x-1 transition-transform">→</span>
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-
-          {filteredProjects.length === 0 && (
-            <div className="text-center py-20 text-gray-500">
-              No projects found in this category yet.
-            </div>
-          )}
         </div>
       </section>
 
@@ -286,7 +341,7 @@ export default function Projects() {
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-2xl"
+              className="bg-white dark:bg-gray-900 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-2xl"
               onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               {/* Modal Header */}
@@ -309,7 +364,7 @@ export default function Projects() {
 
               {/* Modal Content */}
               <div className="p-10">
-                <div className="prose prose-lg max-w-none text-gray-600 mb-10">
+                <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300 mb-10">
                   {selectedProject.description.split('\n').map((line, i) => (
                     <p key={i} className="mb-2">{line.trim()}</p>
                   ))}
@@ -319,28 +374,23 @@ export default function Projects() {
                   <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Built With</h4>
                   <div className="flex flex-wrap gap-3">
                     {selectedProject.technologies.map((tech) => (
-                      <div key={tech} className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl">
-                        <div className="w-5 h-5 text-gray-700">
-                          {getTechIcon(tech)}
-                        </div>
-                        <span className="font-medium text-gray-700">{tech}</span>
-                      </div>
+                      <TechBadge key={tech} name={tech} />
                     ))}
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-6 border-t border-gray-100">
+                <div className="flex gap-4 pt-6 border-t border-gray-100 dark:border-gray-800">
                   <a
                     href={selectedProject.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center px-8 py-4 bg-black text-white font-medium rounded-2xl hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                    className="flex-1 text-center px-8 py-4 bg-black dark:bg-white text-white dark:text-black font-medium rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                   >
                     View Project Live
                   </a>
                   <button
                     onClick={() => setSelectedProject(null)}
-                    className="px-8 py-4 bg-gray-100 text-gray-900 font-medium rounded-2xl hover:bg-gray-200 transition-colors"
+                    className="px-8 py-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium rounded-2xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                   >
                     Close
                   </button>

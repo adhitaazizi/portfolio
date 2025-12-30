@@ -12,15 +12,29 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Architecture & Flow
+
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS, Framer Motion
+- **Deployment**: GitHub Pages (via GitHub Actions)
+
+### Application Flow
+- **Home (`/`)**: 
+  - **About**: Unified section containing Introduction, Social Links, and Work Experience.
+  - **Certifications**: Grid of professional certifications.
+- **Projects (`/projects`)**: Dedicated page for portfolio projects.
+  - Filterable by categories: All, AI & Data, Mobile, Web, Desktop.
+  - Detailed project modals with technology stack and live links.
+- **Navigation**:
+  - Sticky header with links to **About** and **Projects**.
+  - **Dark/Light Mode** toggle (direct switch).
+
 ## Recent Updates
 
-- Removed "v0" generator metadata.
-- Updated project configuration.
-- Enhanced Personal Projects section with:
-  - Category filtering (AI & Data, Mobile, Web, Desktop)
-  - Tech stack visualization with custom SVG icons
-  - Improved UI with animations and responsive design
-- Updated GitHub Actions workflow to use `bun` for consistent deployments.
+- **Component Unification**: Merged Hero and Experience sections into a single, aligned `About` component.
+- **Theme Refactor**: Updated dark mode to Pure Black and simplified the theme toggle button.
+- **Home Page Redesign**: Simplified home page to focus on About and Certifications.
+- **Projects Page**: Moved projects to a dedicated `/projects` route with advanced filtering and modal details.
 
 ## Deployment
 

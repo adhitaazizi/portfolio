@@ -38,23 +38,23 @@ export default function Certifications() {
   ]
 
   return (
-    <section id="certifications" className="py-24 px-4 bg-gray-50">
+    <section id="certifications" className="py-24 px-4 bg-gray-50 dark:bg-black transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-5xl font-serif font-bold text-black mb-4 text-center">Certifications</h2>
+        <h2 className="text-5xl font-serif font-bold text-black dark:text-white mb-4 text-center">Certifications</h2>
         <div className="w-16 h-px bg-gray-400 mx-auto mb-16"></div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {certifications.map((cert, index) => (
-            <div key={index} className="bg-white p-6 border border-gray-200 hover:border-gray-400 transition rounded-3xl" suppressHydrationWarning>
-              <h3 className="text-lg font-bold text-black mb-2">{cert.title}</h3>
-              <p className="text-gray-600 text-sm mb-1">{cert.issuer}</p>
-              <p className="text-gray-500 text-sm mb-3">{cert.date}</p>
+            <div key={index} className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition rounded-3xl" suppressHydrationWarning>
+              <h3 className="text-lg font-bold text-black dark:text-white mb-2">{cert.title}</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-1">{cert.issuer}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">{cert.date}</p>
               <p className="text-gray-400 text-xs font-mono">ID: {cert.credential}</p>
               <a
                 href={cert.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-700 text-xs mt-2 inline-block transition"
+                className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 text-xs mt-2 inline-block transition"
               >
                 View Credential →
               </a>

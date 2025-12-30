@@ -2,6 +2,7 @@
   "name": "adhita-azizi-portfolio",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://adhitaazizi.github.io",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
